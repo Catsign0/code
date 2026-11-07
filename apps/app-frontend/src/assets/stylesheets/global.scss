@@ -95,6 +95,16 @@ a {
 	will-change: filter;
 }
 
+html.linux {
+	a {
+		will-change: auto;
+	}
+
+	.app-contents::before {
+		box-shadow: none;
+	}
+}
+
 .badge {
 	display: flex;
 	border-radius: var(--radius-md);

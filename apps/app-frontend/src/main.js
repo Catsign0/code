@@ -3,6 +3,7 @@ import 'overlayscrollbars/overlayscrollbars.css'
 import { installTooltipDirective } from '@modrinth/ui'
 import { focusManager, VueQueryPlugin } from '@tanstack/vue-query'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import { platform } from '@tauri-apps/plugin-os'
 import { createApp } from 'vue'
 
 import App from '@/App.vue'
@@ -14,6 +15,9 @@ import i18nDebugPlugin from '@/plugins/i18n-debug'
 import router from '@/routes'
 
 debugStartup('Frontend entry module evaluated')
+if (platform() === 'linux') {
+	document.documentElement.classList.add('linux')
+}
 const app = createApp(App)
 setupErrorReporting(app, router)
 

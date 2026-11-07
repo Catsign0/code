@@ -112,9 +112,25 @@ async fn set_restart_after_pending_update(
     Ok(())
 }
 
+/// Disables WebKitGTK's DMABUF renderer on systems using the proprietary
+/// NVIDIA driver, where it causes sluggish or broken rendering. Values the
+/// user already set in their environment are never overridden.
+#[cfg(target_os = "linux")]
+fn configure_linux_webview_env() {
+    if env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_none()
+        && std::path::Path::new("/proc/driver/nvidia").exists()
+    {
+        // SAFETY: called first thing in main, before any other threads exist.
+        unsafe { env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1") };
+    }
+}
+
 // if Tauri app is called with arguments, then those arguments will be treated as commands
 // ie: deep links or filepaths for .mrpacks
 fn main() {
+    #[cfg(target_os = "linux")]
+    configure_linux_webview_env();
+
     theseus::install_crypto_provider();
 
     let runtime = tokio::runtime::Builder::new_multi_thread()
